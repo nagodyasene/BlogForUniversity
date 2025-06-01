@@ -147,15 +147,148 @@ body.loading {
 
 
 .blog-post {
-    background-color: black;
+    background-color: #ffffff !important;
     color: white;
-    height: fit-content;
-    max-width: 90%;
-    max-height: 80vh; /* Limit height to prevent overflow */
-    padding: 1.5rem; /* Fixed padding that doesn't shrink with height */
     position: relative;
-    border-radius: 8px; /* Fixed border radius */
-    transition: all 1s ease-in-out;
+    overflow: visible;
+    border-radius: 16px;
+    
+}
+
+
+.blog-post::before {
+    content: '';
+    position: absolute;
+    top: -32px;
+    left: -32px;
+    right: -32px;
+    bottom: -32px;
+    border-radius: 32px;
+    z-index: -6;
+    pointer-events: none;
+    background: linear-gradient(135deg, rgba(255,0,0,0.7), rgba(255,165,0,0.7), rgba(255,255,0,0.7), rgba(0,128,0,0.7), rgba(0,0,255,0.7), rgba(75,0,130,0.7), rgba(238,130,238,0.7));
+    filter: blur(32px);
+    opacity: 1;
+}
+
+.blog-post > * {
+    position: relative;
+    z-index: 3;
+}
+
+/* macOS Title Bar Styles */
+.macos-title-bar {
+    background-color: #f6f6f6;
+    border-bottom: 1px solid #ccc;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+    z-index: 2;
+    border-radius: 16px 16px 0 0;
+    transition: background-color 0.15s ease;
+    cursor: grab;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
+
+.macos-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.macos-control {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.macos-control.close {
+    background-color: #ff5f57;
+}
+
+.macos-control.minimize {
+    background-color: #ffbd2e;
+}
+
+.macos-control.maximize {
+    background-color: #28ca42;
+}
+
+.macos-control:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
+}
+
+.macos-control:hover::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: black;
+    font-size: 8px;
+    font-weight: bold;
+    opacity: 0.8;
+}
+
+.macos-control.close:hover::after {
+    content: '×';
+}
+
+.macos-control.minimize:hover::after {
+    content: '−';
+}
+
+.macos-control.maximize:hover::after {
+    content: '+';
+}
+
+.macos-title {
+    color: black;
+    font-size: 0.9rem;
+    text-align: center;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    white-space: nowrap;
+    max-width: 60%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.blog-post-content {
+    padding: 1.5rem; /* Move the original padding here */
+    color: black;
+}
+
+.blog-post-content h3{
+    font-size: 1.8rem; /* Fixed font size that doesn't shrink with height */
+    margin: 1rem 1rem 1rem 0; /* Fixed margins */
+    color: black;
+}
+
+.blog-post-content h4 {
+    font-size: 1.3rem;
+    margin: 1.2rem 0 0.8rem 0;
+    color: #333;
+    font-weight: 600;
+    border-bottom: 2px solid #e0e0e0;
+    padding-bottom: 0.3rem;
+}
+
+.blog-post-content p {
+    font-size: 1.1rem; /* Fixed paragraph font size */
+    line-height: 1.6;
+    margin: 0.8rem 0;
+    color: black;
 }
 
 /* Close button styles */
@@ -192,6 +325,7 @@ body.loading {
     transform: scale(0.95);
 }
 
+/* Remove the ::after pseudo-element for the glow */
 .blog-post::after {
     content: '';
     position: absolute;
@@ -199,27 +333,11 @@ body.loading {
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(135deg, red, orange, yellow, green, blue, indigo, purple);
-    filter: blur(12px); /* Fixed blur that doesn't shrink with height */
+    background-color: #ffffff;
+    border-radius: 16px;
     z-index: -1;
-    transform: scale(1.1);
-    border-radius: 8px; /* Fixed border radius */
-    transition: all 1s ease-in-out;
-    pointer-events: none; /* Ensures the gradient doesn't interfere with content */
+    pointer-events: none;
 }
-
-.blog-post h3{
-    font-size: 1.8rem; /* Fixed font size that doesn't shrink with height */
-    margin: 1rem 1rem 1rem 0; /* Fixed margins */
-}
-
-.blog-post p {
-    font-size: 1.1rem; /* Fixed paragraph font size */
-    line-height: 1.6;
-    margin: 0.8rem 0;
-}
-
-/* Hovering effects with reverse animations */
 
 .logo-button {
     transition: all 0.3s ease-in-out;
@@ -268,20 +386,7 @@ body.loading {
     transform: translate(-0.5vh, -0.5vh); /* 4px converted to vh */
     transition: all 0.3s ease-in-out;
 }
-.blog-post:hover::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(135deg, #6A6A6A, #757575, #808080, #8B8B8B, #969696, #A1A1A1, #ACACAC, #B7B7B7, #C2C2C2, #CFCFCF);
-    filter: blur(12px); /* Fixed blur that doesn't shrink with height */
-    z-index: -1;
-    transform: scale(1.1);
-    border-radius: 8px; /* Fixed border radius */
-    transition: all 1s ease-in-out;
-}
+
 .blog-post:hover {
     background-color: #FAFAFA;
     color: black;
@@ -326,6 +431,26 @@ body.loading {
     
     .links {
         top: 8vh; /* Adjust for smaller navbar height */
+    }
+
+    .blog-post {
+        max-width: 95%;
+        margin: 0 0.5rem;
+    }
+
+    .blog-post-content {
+        padding: 1rem;
+    }
+
+    .blog-post-content h3 {
+        font-size: 1.4rem;
+        margin: 0.8rem 0;
+    }
+
+    .blog-post-content p {
+        font-size: 1rem;
+        line-height: 1.4;
+        margin: 0.6rem 0;
     }
 }
 
@@ -457,21 +582,22 @@ body.loading {
     }
 
     .blog-post {
-        max-width: 90%;
-        padding: 1.5rem;
+        max-width: 85%;
         margin: 0 auto;
     }
 
-    .blog-post h3 {
-        font-size: 1.6rem;
-        margin: 0.8rem 0;
-        text-align: center;
+    .blog-post-content {
+        padding: 1.8rem;
     }
 
-    .blog-post p {
-        font-size: 1rem;
-        line-height: 1.5;
-        text-align: justify;
+    .blog-post-content h3 {
+        font-size: 1.8rem;
+        margin: 1rem 1rem 1rem 0;
+    }
+
+    .blog-post-content p {
+        font-size: 1.1rem;
+        line-height: 1.6;
     }
 
     /* Reduce hover effects on mobile */
@@ -520,16 +646,21 @@ body.loading {
     }
 
     .blog-post {
-        max-width: 75%;
+        max-width: 85%;
+        padding: 1.8rem;
+        margin: 0 auto;
+    }
+
+    .blog-post-content {
         padding: 1.8rem;
     }
 
-    .blog-post h3 {
+    .blog-post-content h3 {
         font-size: 1.8rem;
         margin: 1rem 1rem 1rem 0;
     }
 
-    .blog-post p {
+    .blog-post-content p {
         font-size: 1.1rem;
         line-height: 1.6;
     }
@@ -567,16 +698,20 @@ body.loading {
     }
 
     .blog-post {
-        max-width: 65%;
+        max-width: 75%;
+        margin: 0 auto;
+    }
+
+    .blog-post-content {
         padding: 2rem;
     }
 
-    .blog-post h3 {
+    .blog-post-content h3 {
         font-size: 1.9rem;
         margin: 1rem 1rem 1rem 0;
     }
 
-    .blog-post p {
+    .blog-post-content p {
         font-size: 1.2rem;
         line-height: 1.6;
     }
@@ -599,6 +734,11 @@ body.loading {
     /* Keep existing desktop styles */
     .blog-post {
         max-width: 55%;
+        margin: 0 auto;
+    }
+
+    .blog-post-content {
+        padding: 2.2rem;
     }
 }
 
@@ -620,14 +760,18 @@ body.loading {
 
     .blog-post {
         max-width: 45%;
-        padding: 2.2rem;
+        margin: 0 auto;
     }
 
-    .blog-post h3 {
+    .blog-post-content {
+        padding: 2.5rem;
+    }
+
+    .blog-post-content h3 {
         font-size: 2rem;
     }
 
-    .blog-post p {
+    .blog-post-content p {
         font-size: 1.3rem;
         line-height: 1.7;
     }
@@ -637,6 +781,11 @@ body.loading {
 @media (min-width: 1920px) {
     .blog-post {
         max-width: 35%;
+        margin: 0 auto;
+    }
+
+    .blog-post-content {
+        padding: 2.5rem;
     }
 
     .navigation-bar .logo {
@@ -647,11 +796,11 @@ body.loading {
         font-size: 3vh;
     }
 
-    .blog-post h3 {
+    .blog-post-content h3 {
         font-size: 2.2rem;
     }
 
-    .blog-post p {
+    .blog-post-content p {
         font-size: 1.4rem;
     }
 }
@@ -669,14 +818,17 @@ body.loading {
 
     .blog-post {
         max-width: 80%;
+    }
+
+    .blog-post-content {
         padding: 1.2rem;
     }
 
-    .blog-post h3 {
+    .blog-post-content h3 {
         font-size: 1.5rem;
     }
 
-    .blog-post p {
+    .blog-post-content p {
         font-size: 1rem;
     }
 
@@ -716,16 +868,19 @@ body.loading {
 /* Small viewport height - ensure readability when browser height is reduced */
 @media (max-height: 500px) {
     .blog-post {
-        padding: 1rem;
         margin: 0.5rem 0;
     }
+
+    .blog-post-content {
+        padding: 1rem;
+    }
     
-    .blog-post h3 {
+    .blog-post-content h3 {
         font-size: 1.4rem !important;
         margin: 0.5rem 0 !important;
     }
     
-    .blog-post p {
+    .blog-post-content p {
         font-size: 1rem !important;
         line-height: 1.4 !important;
         margin: 0.4rem 0 !important;
@@ -736,3 +891,94 @@ body.loading {
         overflow-y: hidden; /* Prevent scrolling to maintain consistency */
     }
 }
+
+/* Enhanced Drag System Styles */
+.blog-post {
+    will-change: transform, box-shadow;
+}
+
+.blog-post.dragging {
+    transform: scale(1.02);
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+    transition: none !important;
+    z-index: 9999 !important;
+}
+
+.blog-post.dragging .macos-title-bar {
+    background-color: #e0e0e0;
+    cursor: grabbing !important;
+}
+
+.macos-title-bar:active {
+    cursor: grabbing;
+}
+
+/* Prevent text selection and improve performance during drag */
+.blog-post.dragging,
+.blog-post.dragging * {
+    user-select: none !important;
+    -webkit-user-select: none !important;
+    -moz-user-select: none !important;
+    -ms-user-select: none !important;
+    pointer-events: none;
+}
+
+.blog-post.dragging .macos-title-bar {
+    pointer-events: auto;
+}
+
+/* Smooth transition when not dragging */
+.blog-post:not(.dragging) {
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), 
+                box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Enhanced visual feedback for the controls */
+.blog-post.dragging .macos-control {
+    opacity: 0.7;
+}
+
+/* List styling for the features */
+.blog-post-content ul {
+    color: black;
+    padding-left: 1.5rem;
+    margin: 1rem 0;
+}
+
+.blog-post-content li {
+    color: black;
+    margin: 0.5rem 0;
+    line-height: 1.5;
+}
+
+/* Nested list styling */
+.blog-post-content ul ul {
+    margin: 0.3rem 0;
+    padding-left: 1.2rem;
+}
+
+.blog-post-content ul ul li {
+    margin: 0.2rem 0;
+    font-size: 0.95rem;
+    color: #555;
+}
+
+/* Mobile-specific enhancements */
+@media (max-width: 768px) {
+    .blog-post.dragging {
+        transform: scale(1.01);
+    }
+    
+    .macos-title-bar {
+        padding: 16px;
+        touch-action: none;
+    }
+    
+    .macos-title {
+        font-size: 1rem;
+    }
+}
+
+
+
+

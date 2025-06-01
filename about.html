@@ -37,9 +37,19 @@
     </nav>
     <main class="main-content">
         <div class="blog-post">
-            <h3>About Enes' Blog</h3>
-            <p>This blog is created to talk about my daily life in university and <br>show you a little bit more about my life!</p>
-            <p>Feel free to explore the content! Thank you for your interest!</p>
+            <div class="macos-title-bar">
+                <div class="macos-controls">
+                    <div class="macos-control close"></div>
+                    <div class="macos-control minimize"></div>
+                    <div class="macos-control maximize"></div>
+                </div>
+                <div class="macos-title">About</div>
+            </div>
+            <div class="blog-post-content">
+                <h3>About Enes' Blog</h3>
+                <p>This blog is created to talk about my daily life in university and <br>show you a little bit more about my life!</p>
+                <p>Feel free to explore the content! Thank you for your interest!</p>
+            </div>
         </div>
     </main>
 
@@ -64,5 +74,6 @@
             }, 800); // Minimum loading time of 800ms
         });
     </script>
+    <script src="./blog-drag.js"></script>
 </body>
 </html>

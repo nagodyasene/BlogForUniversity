@@ -39,15 +39,25 @@
     </nav>
     <main class="main-content">
         <div class="blog-post">
-            <button class="close-button" onclick="window.history.back()">×</button>
-            <h3>Blog Post Title</h3>
-            <p>This is a sample blog post. Replace this content with your actual blog post content.</p>
-            <p>Add your blog content here!</p>
+            <div class="macos-title-bar">
+                <div class="macos-controls">
+                    <div class="macos-control close"></div>
+                    <div class="macos-control minimize"></div>
+                    <div class="macos-control maximize"></div>
+                </div>
+                <div class="macos-title">Blog Post</div>
+            </div>
+            <div class="blog-post-content">
+                <p>Here's where the magic happens!</p>
+                <p>This is a blog created for university purposes. Here you can <br>find  various articles and posts related to different topics.</p>
+                <p>Feel free to explore the content and learn more about the <br>subjects that interest you!</p>
+            </div>
         </div>
     </main>
 
     <!-- External JavaScript files -->
     <script src="./hamburger-menu.js"></script>
+    <script src="./blog-drag.js"></script>
     <script>
         // Loading screen functionality
         window.addEventListener('load', function() {
