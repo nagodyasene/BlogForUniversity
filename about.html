@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About - Enes' Blog for University</title>    
+    <!-- Load CSS normally for better control -->
+    <link rel="stylesheet" href="./styles.css">
+    <!-- Font optimization -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&display=swap" rel="stylesheet">
+</head>
+<body class="loading">
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-text">Loading About Page...</div>
+        <div class="loading-spinner"></div>
+    </div>
+
+    <nav class="navigation-bar">
+        <div class="logo">
+                <a href="./index.html" class="logo-button">Enes' Blog</a>
+        </div>
+        <button class="hamburger" aria-label="Menu"></button>
+        <div class="links">
+            <div class="about-button">
+                <a href="./about.html">About</a>
+            </div>
+            <div class="contact-button">
+                <a href="./contact.html">Contact</a>
+            </div>
+            <div class="blog-button">
+                <a href="./index.html">Blog</a>
+            </div>
+        </div>
+    </nav>
+    <main class="main-content">
+        <div class="blog-post">
+            <h3>About Enes' Blog</h3>
+            <p>This blog is created to talk about my daily life in university and <br>show you a little bit more about my life!</p>
+            <p>Feel free to explore the content! Thank you for your interest!</p>
+        </div>
+    </main>
+
+    <!-- External JavaScript files -->
+    <script src="./hamburger-menu.js"></script>
+    <script>
+        // Loading screen functionality
+        window.addEventListener('load', function() {
+            // Wait a minimum time to ensure smooth loading experience
+            setTimeout(function() {
+                const loadingScreen = document.getElementById('loadingScreen');
+                const body = document.body;
+                
+                // Fade out loading screen
+                loadingScreen.classList.add('fade-out');
+                body.classList.remove('loading');
+                
+                // Remove loading screen after transition
+                setTimeout(function() {
+                    loadingScreen.style.display = 'none';
+                }, 500);
+            }, 800); // Minimum loading time of 800ms
+        });
+    </script>
+</body>
+</html>

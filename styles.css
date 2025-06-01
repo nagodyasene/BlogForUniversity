@@ -1,0 +1,738 @@
+body{
+    background-color: white;
+    margin: 0;
+    padding: 0;
+    font-family: "Oswald", sans-serif;
+    overflow: hidden; /* Prevent any scrolling */
+    height: 100vh; /* Lock to viewport height */
+}
+
+/* Loading Screen Styles */
+.loading-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #000000, #1a1a1a, #333333);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    opacity: 1;
+    transition: opacity 0.5s ease-out;
+}
+
+.loading-screen.fade-out {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.loading-text {
+    color: white;
+    font-family: "Oswald", sans-serif;
+    font-size: 2.5vh;
+    margin-bottom: 2vh;
+    text-align: center;
+}
+
+.loading-spinner {
+    width: 5vh;
+    height: 5vh;
+    border: 0.5vh solid #333;
+    border-top: 0.5vh solid white;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+body.loading {
+    overflow: hidden;
+}
+
+/* Navigation Bar Styles */
+.navigation-bar {
+    background-color: #000000;
+    overflow: auto;
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    min-height: 9.5vh; /* 75px converted to vh (75/790 * 100) */
+}
+
+/* Hamburger menu - hidden by default on desktop */
+.hamburger {
+    display: none;
+    flex-direction: column;
+    cursor: pointer;
+    z-index: 1001;
+    position: absolute;
+    right: 2.5vh;
+    top: 50%;
+    transform: translateY(-50%);
+    padding: 1vh;
+}
+
+.hamburger span {
+    width: 3vh;
+    height: 0.4vh;
+    background-color: white;
+    margin: 0.3vh 0;
+    transition: 0.3s ease;
+    display: block;
+    border-radius: 0.2vh;
+}
+
+.logo-button{
+    display: inline-block;
+    padding: 0.5vh; /* 7px converted to vh */
+}
+
+.navigation-bar .logo{
+    font-size: 3.8vh; /* 30px converted to vh */
+    margin-left: 2.5vh; /* 20px converted to vh */
+    align-content: center;
+    justify-content: center;
+}
+
+.navigation-bar .links {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    margin-right: 2.5vh; /* 20px converted to vh */
+    gap: 1.9vh; /* 15px converted to vh */
+}
+
+.links a {
+    font-size: 2.5vh; /* 20px converted to vh */
+    color: white;
+    display: flex;
+    padding: 0.5vh; /* 4px converted to vh */
+}
+
+.navigation-bar a {
+    color: white;
+    text-decoration: none;
+    text-align: center;
+}
+
+.logo-button a,
+.about-button a,
+.contact-button a,
+.blog-button a {
+    display: inline-block;
+    padding: 0.9vh; /* 7px converted to vh */
+    font-size: 2.5vh; /* 20px converted to vh */
+    color: white;
+    text-decoration: none;
+    text-align: center;
+    transition: all 0.3s ease-in-out;
+}
+
+/* Main content styles */
+
+.main-content {
+    padding: 2.5vh; /* 20px converted to vh */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: calc(100vh - 9.5vh - 5vh); /* Full height minus navbar height and padding */
+    overflow-y: hidden; /* Prevents overflow */
+}
+
+
+.blog-post {
+    background-color: black;
+    color: white;
+    height: fit-content;
+    max-width: 90%;
+    max-height: 80vh; /* Limit height to prevent overflow */
+    padding: 1.5rem; /* Fixed padding that doesn't shrink with height */
+    position: relative;
+    border-radius: 8px; /* Fixed border radius */
+    transition: all 1s ease-in-out;
+}
+
+/* Close button styles */
+.close-button {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: none;
+    border: 2px solid white;
+    color: white;
+    font-size: 1.2rem;
+    font-weight: bold;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: "Oswald", sans-serif;
+    transition: all 0.3s ease-in-out;
+    z-index: 10;
+}
+
+.close-button:hover {
+    background: linear-gradient(135deg, red, orange, yellow, green, blue, indigo, purple);
+    border: 2px solid transparent;
+    color: black;
+    transform: scale(1.1);
+    box-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+}
+
+.close-button:active {
+    transform: scale(0.95);
+}
+
+.blog-post::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, red, orange, yellow, green, blue, indigo, purple);
+    filter: blur(12px); /* Fixed blur that doesn't shrink with height */
+    z-index: -1;
+    transform: scale(1.1);
+    border-radius: 8px; /* Fixed border radius */
+    transition: all 1s ease-in-out;
+    pointer-events: none; /* Ensures the gradient doesn't interfere with content */
+}
+
+.blog-post h3{
+    font-size: 1.8rem; /* Fixed font size that doesn't shrink with height */
+    margin: 1rem 1rem 1rem 0; /* Fixed margins */
+}
+
+.blog-post p {
+    font-size: 1.1rem; /* Fixed paragraph font size */
+    line-height: 1.6;
+    margin: 0.8rem 0;
+}
+
+/* Hovering effects with reverse animations */
+
+.logo-button {
+    transition: all 0.3s ease-in-out;
+    transform: translate(0, 0);
+    box-shadow: none;
+}
+
+.logo-button:hover {
+    transform: translate(-0.5vh, -0.5vh); /* 4px converted to vh */
+    box-shadow: 0.5vh 0.5vh red; /* 4px converted to vh */
+    transition: all 0.3s ease-in-out;
+}
+
+.about-button {
+    transition: all 0.3s ease-in-out;
+    transform: translate(0, 0);
+    box-shadow: none;
+}
+
+.about-button:hover{
+    box-shadow: 0.5vh 0.5vh 0 orange; /* Updated to orange */
+    transform: translate(-0.5vh, -0.5vh); /* 4px converted to vh */
+    transition: all 0.3s ease-in-out;
+}
+
+.contact-button {
+    transition: all 0.3s ease-in-out;
+    transform: translate(0, 0);
+    box-shadow: none;
+}
+
+.contact-button:hover{
+    box-shadow: 0.5vh 0.5vh 0 yellow; /* Updated to yellow */
+    transform: translate(-0.5vh, -0.5vh); /* 4px converted to vh */
+    transition: all 0.3s ease-in-out;
+}
+
+.blog-button {
+    transition: all 0.3s ease-in-out;
+    transform: translate(0, 0);
+    box-shadow: none;
+}
+
+.blog-button:hover{
+    box-shadow: 0.5vh 0.5vh 0 green; /* Updated to green */
+    transform: translate(-0.5vh, -0.5vh); /* 4px converted to vh */
+    transition: all 0.3s ease-in-out;
+}
+.blog-post:hover::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, #6A6A6A, #757575, #808080, #8B8B8B, #969696, #A1A1A1, #ACACAC, #B7B7B7, #C2C2C2, #CFCFCF);
+    filter: blur(12px); /* Fixed blur that doesn't shrink with height */
+    z-index: -1;
+    transform: scale(1.1);
+    border-radius: 8px; /* Fixed border radius */
+    transition: all 1s ease-in-out;
+}
+.blog-post:hover {
+    background-color: #FAFAFA;
+    color: black;
+    transition: all 1s ease-in-out;
+}
+
+/* Focus effects */
+
+.logo-button:focus {
+    background-color: red;
+    color: white;
+}
+
+.about-button a:focus{
+    background-color: orange;
+    color: white;
+}
+
+.contact-button a:focus{
+    background-color: yellow;
+    color: white;
+}
+
+.blog-button a:focus{
+    background-color: green;
+    color: white;
+}
+
+/* Responsive Design Media Queries */
+
+/* Extra small mobile devices */
+@media (max-width: 320px) {
+    .hamburger {
+        display: flex;
+        right: 1.5vh;
+    }
+    
+    .navigation-bar .logo {
+        font-size: 2.5vh;
+        margin-left: 1.5vh;
+    }
+    
+    .links {
+        top: 8vh; /* Adjust for smaller navbar height */
+    }
+}
+
+/* Mobile-first: Base styles are for mobile devices */
+/* Adjust base mobile styles */
+@media (max-width: 480px) {
+    .navigation-bar {
+        flex-direction: row;
+        position: relative;
+        min-height: 8vh;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .logo {
+        text-align: left;
+        margin: 0;
+        padding: 1vh 0;
+    }
+
+    .navigation-bar .logo {
+        font-size: 3vh;
+        margin-left: 2vh;
+    }
+
+    .logo-button {
+        padding: 1vh;
+    }
+
+    .links {
+        display: none;
+        flex-direction: column;
+        width: 100vw;
+        height: 100vh;
+        background-color: rgba(0, 0, 0, 0.95);
+        margin-right: 0;
+        gap: 2vh;
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 999;
+        transform: translateY(-100%);
+        opacity: 0;
+        transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+        justify-content: center;
+        align-items: center;
+        backdrop-filter: blur(5px);
+    }
+
+    .links.active {
+        display: flex;
+        transform: translateY(0);
+        opacity: 1;
+    }
+
+    .links a {
+        font-size: 2.2vh;
+        padding: 2vh 4vh;
+        text-align: center;
+        display: block;
+        width: auto;
+        min-width: 200px;
+    }
+    
+    /* Style each nav button in mobile menu */
+    .links .about-button,
+    .links .contact-button,
+    .links .blog-button {
+        width: auto;
+        transition: all 0.3s ease-in-out;
+        transform: translate(0, 0);
+        border-bottom: none;
+        margin: 1vh 0;
+    }
+    
+    .links .about-button:hover,
+    .links .about-button:active {
+        transform: translate(-0.5vh, -0.5vh);
+        box-shadow: 0.5vh 0.5vh 0 orange;
+        background-color: rgba(255, 165, 0, 0.1);
+    }
+    
+    .links .contact-button:hover,
+    .links .contact-button:active {
+        transform: translate(-0.5vh, -0.5vh);
+        box-shadow: 0.5vh 0.5vh 0 yellow;
+        background-color: rgba(255, 255, 0, 0.1);
+    }
+    
+    .links .blog-button:hover,
+    .links .blog-button:active {
+        transform: translate(-0.5vh, -0.5vh);
+        box-shadow: 0.5vh 0.5vh 0 green;
+        background-color: rgba(0, 128, 0, 0.1);
+    }
+
+    .hamburger {
+        display: flex;
+        position: absolute;
+        right: 2vh;
+        top: 50%;
+        transform: translateY(-50%);
+        cursor: pointer;
+        z-index: 1001;
+        padding: 1vh;
+        background: none !important;
+        border: none;
+        font-size: 3vh;
+        color: white;
+        align-items: center;
+        justify-content: center;
+        width: 5vh;
+        height: 5vh;
+    }
+    
+    .hamburger:hover {
+        background: none !important;
+    }
+
+    .hamburger:before {
+        content: "☰";
+        font-size: 3vh;
+        color: white;
+    }
+
+    .main-content {
+        padding: 1.5vh;
+        height: calc(100vh - 8vh - 3vh);
+    }
+
+    .blog-post {
+        max-width: 90%;
+        padding: 1.5rem;
+        margin: 0 auto;
+    }
+
+    .blog-post h3 {
+        font-size: 1.6rem;
+        margin: 0.8rem 0;
+        text-align: center;
+    }
+
+    .blog-post p {
+        font-size: 1rem;
+        line-height: 1.5;
+        text-align: justify;
+    }
+
+    /* Reduce hover effects on mobile */
+    .logo-button:hover,
+    .about-button:hover,
+    .contact-button:hover,
+    .blog-button:hover {
+        transform: none;
+        box-shadow: none;
+    }
+
+    /* Touch-friendly focus states */
+    .logo-button:active,
+    .about-button a:active,
+    .contact-button a:active,
+    .blog-button a:active {
+        background-color: rgba(255, 255, 255, 0.1);
+    }
+}
+
+/* Large Mobile / Small Tablet */
+@media (min-width: 481px) and (max-width: 768px) {
+    .navigation-bar {
+        min-height: 8.5vh;
+    }
+
+    .navigation-bar .logo {
+        font-size: 3.2vh;
+        margin-left: 1.5vh;
+    }
+
+    .links {
+        margin-right: 1.5vh;
+        gap: 1.2vh;
+        display: flex;
+    }
+
+    .links a {
+        font-size: 2.2vh;
+        padding: 0.8vh;
+    }
+
+    .main-content {
+        padding: 2vh;
+        height: calc(100vh - 8.5vh - 4vh);
+    }
+
+    .blog-post {
+        max-width: 75%;
+        padding: 1.8rem;
+    }
+
+    .blog-post h3 {
+        font-size: 1.8rem;
+        margin: 1rem 1rem 1rem 0;
+    }
+
+    .blog-post p {
+        font-size: 1.1rem;
+        line-height: 1.6;
+    }
+
+    .hamburger {
+        display: none;
+    }
+}
+
+/* Tablet */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .navigation-bar {
+        min-height: 9vh;
+    }
+
+    .navigation-bar .logo {
+        font-size: 3.5vh;
+        margin-left: 2vh;
+    }
+
+    .links {
+        margin-right: 2vh;
+        gap: 1.5vh;
+        display: flex;
+    }
+
+    .links a {
+        font-size: 2.3vh;
+        padding: 0.7vh;
+    }
+
+    .main-content {
+        padding: 2.2vh;
+        height: calc(100vh - 9vh - 4.4vh);
+    }
+
+    .blog-post {
+        max-width: 65%;
+        padding: 2rem;
+    }
+
+    .blog-post h3 {
+        font-size: 1.9rem;
+        margin: 1rem 1rem 1rem 0;
+    }
+
+    .blog-post p {
+        font-size: 1.2rem;
+        line-height: 1.6;
+    }
+
+    .hamburger {
+        display: none;
+    }
+}
+
+/* Desktop and larger screens */
+@media (min-width: 1025px) {
+    .hamburger {
+        display: none;
+    }
+
+    .links {
+        display: flex;
+    }
+
+    /* Keep existing desktop styles */
+    .blog-post {
+        max-width: 55%;
+    }
+}
+
+/* Large desktop screens */
+@media (min-width: 1440px) {
+    .navigation-bar .logo {
+        font-size: 4vh;
+        margin-left: 3vh;
+    }
+
+    .links {
+        margin-right: 3vh;
+        gap: 2vh;
+    }
+
+    .links a {
+        font-size: 2.8vh;
+    }
+
+    .blog-post {
+        max-width: 45%;
+        padding: 2.2rem;
+    }
+
+    .blog-post h3 {
+        font-size: 2rem;
+    }
+
+    .blog-post p {
+        font-size: 1.3rem;
+        line-height: 1.7;
+    }
+}
+
+/* Extra large screens */
+@media (min-width: 1920px) {
+    .blog-post {
+        max-width: 35%;
+    }
+
+    .navigation-bar .logo {
+        font-size: 4.5vh;
+    }
+
+    .links a {
+        font-size: 3vh;
+    }
+
+    .blog-post h3 {
+        font-size: 2.2rem;
+    }
+
+    .blog-post p {
+        font-size: 1.4rem;
+    }
+}
+
+/* Landscape mobile orientation */
+@media (max-width: 768px) and (orientation: landscape) {
+    .navigation-bar {
+        min-height: 12vh;
+    }
+
+    .main-content {
+        height: calc(100vh - 12vh - 2vh);
+        padding: 1vh;
+    }
+
+    .blog-post {
+        max-width: 80%;
+        padding: 1.2rem;
+    }
+
+    .blog-post h3 {
+        font-size: 1.5rem;
+    }
+
+    .blog-post p {
+        font-size: 1rem;
+    }
+
+    /* Adjust menu for landscape */
+    .links {
+        top: 12vh; /* Match the navbar height in landscape */
+        max-height: calc(100vh - 12vh); /* Ensure it doesn't extend beyond viewport */
+    }
+}
+
+/* High DPI / Retina displays */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    .logo-button,
+    .about-button,
+    .contact-button,
+    .blog-button {
+        /* Enhance text rendering on high DPI displays */
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+}
+
+/* Accessibility improvements */
+@media (prefers-reduced-motion: reduce) {
+    .logo-button,
+    .about-button,
+    .contact-button,
+    .blog-button {
+        transition: none;
+    }
+
+    .hamburger span {
+        transition: none;
+    }
+}
+
+/* Small viewport height - ensure readability when browser height is reduced */
+@media (max-height: 500px) {
+    .blog-post {
+        padding: 1rem;
+        margin: 0.5rem 0;
+    }
+    
+    .blog-post h3 {
+        font-size: 1.4rem !important;
+        margin: 0.5rem 0 !important;
+    }
+    
+    .blog-post p {
+        font-size: 1rem !important;
+        line-height: 1.4 !important;
+        margin: 0.4rem 0 !important;
+    }
+    
+    .main-content {
+        padding: 1rem !important;
+        overflow-y: hidden; /* Prevent scrolling to maintain consistency */
+    }
+}
