@@ -9,6 +9,8 @@ class BlogDragSystem {
         this.isMinimized = false;
         this.isMaximized = false;
         this.savedPosition = { x: 0, y: 0, width: 0, height: 0 };
+        this.fixedWidth = 0;
+        this.fixedHeight = 0;
         
         this.init();
     }
@@ -47,10 +49,27 @@ class BlogDragSystem {
     setupBlogPostForDragging() {
         // Store initial position
         const rect = this.blogPost.getBoundingClientRect();
+        
+        // Get navbar bottom position for accurate positioning
+        const navbar = document.querySelector('.navigation-bar');
+        let navbarBottom = 0;
+        if (navbar) {
+            const navbarRect = navbar.getBoundingClientRect();
+            navbarBottom = navbarRect.bottom;
+        }
+        
+        // Ensure initial position is below navbar with margin
+        const margin = 20;
+        const safeY = Math.max(rect.top, navbarBottom + margin);
+        
         this.initialPosition = {
             x: rect.left + window.scrollX,
-            y: rect.top + window.scrollY
+            y: safeY + window.scrollY
         };
+        
+        // Store the exact initial width and height BEFORE making it absolute
+        this.fixedWidth = rect.width;
+        this.fixedHeight = rect.height;
         
         // Make it absolutely positioned
         this.blogPost.style.position = 'absolute';
@@ -59,16 +78,22 @@ class BlogDragSystem {
         this.blogPost.style.margin = '0';
         this.blogPost.style.zIndex = '1000';
         
-        // Add some constraints to keep it on screen
-        this.blogPost.style.maxWidth = '90vw';
-        this.blogPost.style.maxHeight = '90vh';
+        // Set fixed dimensions to prevent resizing/wrapping
+        this.blogPost.style.width = this.fixedWidth + 'px';
+        this.blogPost.style.minWidth = this.fixedWidth + 'px';
+        this.blogPost.style.maxWidth = this.fixedWidth + 'px';
+        this.blogPost.style.height = 'auto';
+        this.blogPost.style.boxSizing = 'border-box';
         
-        // Store initial size
+        // IMPORTANT: Ensure it can't overflow the viewport
+        this.blogPost.style.maxWidth = Math.min(this.fixedWidth, window.innerWidth - 20) + 'px';
+        
+        // Store initial size and position for maximize/restore functionality
         this.savedPosition = {
             x: this.initialPosition.x,
             y: this.initialPosition.y,
-            width: rect.width,
-            height: rect.height
+            width: this.fixedWidth,
+            height: this.fixedHeight 
         };
     }
     
@@ -143,11 +168,19 @@ class BlogDragSystem {
                 height: rect.height
             };
             
+            // Get navbar height to position maximized window below it
+            const navbar = document.querySelector('.navigation-bar');
+            const navbarHeight = navbar ? navbar.offsetHeight : 0;
+            
+            // Calculate available space below navbar
+            const availableHeight = window.innerHeight - navbarHeight;
+            const topPosition = navbarHeight + (availableHeight * 0.05); // 5% margin from navbar
+            
             // Maximize
             this.blogPost.style.left = '5%';
-            this.blogPost.style.top = '5%';
+            this.blogPost.style.top = topPosition + 'px';
             this.blogPost.style.width = '90%';
-            this.blogPost.style.height = '90%';
+            this.blogPost.style.height = (availableHeight * 0.9) + 'px'; // 90% of available height
             this.isMaximized = true;
         }
     }
@@ -231,12 +264,32 @@ class BlogDragSystem {
         let newX = clientX - this.dragOffset.x;
         let newY = clientY - this.dragOffset.y;
         
-        // Apply constraints to keep blog post on screen
-        const maxX = window.innerWidth - this.blogPost.offsetWidth;
-        const maxY = window.innerHeight - this.blogPost.offsetHeight;
+        // Get navbar bottom position for accurate constraint
+        const navbar = document.querySelector('.navigation-bar');
+        let navbarBottom = 0;
+        if (navbar) {
+            const navbarRect = navbar.getBoundingClientRect();
+            navbarBottom = navbarRect.bottom;
+        }
         
-        newX = Math.max(0, Math.min(newX, maxX));
-        newY = Math.max(0, Math.min(newY, maxY));
+        // Use the current actual dimensions for boundary calculations
+        const currentRect = this.blogPost.getBoundingClientRect();
+        const postWidth = currentRect.width;
+        const postHeight = currentRect.height;
+        
+        // Apply strict constraints with safety margins
+        const margin = 10;
+        const minX = margin;
+        const minY = navbarBottom + margin;
+        const maxX = window.innerWidth - postWidth - margin;
+        const maxY = window.innerHeight - postHeight - margin;
+        
+        // Ensure values are valid
+        const safeMaxX = Math.max(minX, maxX);
+        const safeMaxY = Math.max(minY, maxY);
+        
+        newX = Math.max(minX, Math.min(newX, safeMaxX));
+        newY = Math.max(minY, Math.min(newY, safeMaxY));
         
         // Apply new position
         this.blogPost.style.left = newX + 'px';
@@ -265,9 +318,9 @@ class BlogDragSystem {
         const style = document.createElement('style');
         style.textContent = `
             .blog-post.dragging {
-                transform: scale(1.02);
                 box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
                 transition: none;
+                z-index: 9999;
             }
             
             .blog-post.dragging .macos-title-bar {
@@ -319,11 +372,16 @@ class BlogDragSystem {
     
     // Method to center the blog post
     centerPost() {
+        // Get navbar height to position below it
+        const navbar = document.querySelector('.navigation-bar');
+        const navbarHeight = navbar ? navbar.offsetHeight : 0;
+        
         const centerX = (window.innerWidth - this.blogPost.offsetWidth) / 2;
-        const centerY = (window.innerHeight - this.blogPost.offsetHeight) / 2;
+        const availableHeight = window.innerHeight - navbarHeight;
+        const centerY = navbarHeight + (availableHeight - this.blogPost.offsetHeight) / 2;
         
         this.blogPost.style.left = Math.max(0, centerX) + 'px';
-        this.blogPost.style.top = Math.max(0, centerY) + 'px';
+        this.blogPost.style.top = Math.max(navbarHeight, centerY) + 'px';
     }
 }
 

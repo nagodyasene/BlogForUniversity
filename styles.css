@@ -5,6 +5,7 @@ body{
     font-family: "Oswald", sans-serif;
     overflow: hidden; /* Prevent any scrolling */
     height: 100vh; /* Lock to viewport height */
+    overflow-x: hidden; /* Prevent horizontal page expansion */
 }
 
 /* Loading Screen Styles */
