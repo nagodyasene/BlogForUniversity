@@ -1,3 +1,103 @@
+// Viewport Constraint System - Add this at the top of the file
+class ViewportConstraintSystem {
+    constructor() {
+        this.init();
+    }
+    
+    init() {
+        this.setupViewportConstraints();
+        this.addResizeListener();
+    }
+    
+    setupViewportConstraints() {
+        // Get actual viewport dimensions
+        const viewportWidth = window.innerWidth;
+        const viewportHeight = window.innerHeight;
+        
+        // Set CSS custom properties for viewport dimensions
+        document.documentElement.style.setProperty('--viewport-width', viewportWidth + 'px');
+        document.documentElement.style.setProperty('--viewport-height', viewportHeight + 'px');
+        
+        // Apply constraints to body and html
+        document.documentElement.style.maxWidth = viewportWidth + 'px';
+        document.documentElement.style.maxHeight = viewportHeight + 'px';
+        document.documentElement.style.overflow = 'hidden';
+        
+        document.body.style.maxWidth = viewportWidth + 'px';
+        document.body.style.maxHeight = viewportHeight + 'px';
+        document.body.style.overflow = 'hidden';
+        document.body.style.position = 'relative';
+        
+        // Create a main container that acts as the boundary
+        this.createViewportContainer();
+        
+        console.log(`🔒 Viewport locked to: ${viewportWidth}x${viewportHeight}`);
+    }
+    
+    createViewportContainer() {
+        // Check if container already exists
+        let container = document.getElementById('viewport-container');
+        
+        if (!container) {
+            // Create a container that wraps all content
+            container = document.createElement('div');
+            container.id = 'viewport-container';
+            container.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: var(--viewport-width);
+                height: var(--viewport-height);
+                max-width: var(--viewport-width);
+                max-height: var(--viewport-height);
+                overflow: hidden;
+                z-index: 1;
+                pointer-events: none;
+            `;
+            
+            // Move all body children into the container
+            const bodyChildren = Array.from(document.body.children);
+            bodyChildren.forEach(child => {
+                if (child.id !== 'viewport-container') {
+                    container.appendChild(child);
+                }
+            });
+            
+            document.body.appendChild(container);
+            
+            // Re-enable pointer events for the container content
+            container.style.pointerEvents = 'auto';
+        }
+    }
+    
+    addResizeListener() {
+        let resizeTimeout;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(() => {
+                this.setupViewportConstraints();
+            }, 100); // Debounce resize events
+        });
+    }
+    
+    // Method to get safe boundaries for any element
+    getSafeBoundaries(elementWidth, elementHeight) {
+        const viewportWidth = window.innerWidth;
+        const viewportHeight = window.innerHeight;
+        const margin = 10;
+        
+        return {
+            minX: margin,
+            minY: margin,
+            maxX: viewportWidth - elementWidth - margin,
+            maxY: viewportHeight - elementHeight - margin
+        };
+    }
+}
+
+// Initialize viewport constraint system BEFORE the blog drag system
+const viewportConstraints = new ViewportConstraintSystem();
+
 // Blog Post Drag System
 class BlogDragSystem {
     constructor() {
@@ -44,13 +144,16 @@ class BlogDragSystem {
         
         // Setup macOS controls
         this.setupMacOSControls();
+        
+        // Setup hamburger menu z-index management
+        this.setupHamburgerMenuZIndex();
     }
     
     setupBlogPostForDragging() {
         // Store initial position
         const rect = this.blogPost.getBoundingClientRect();
         
-        // Get navbar bottom position for accurate positioning
+        // Get navbar bottom position
         const navbar = document.querySelector('.navigation-bar');
         let navbarBottom = 0;
         if (navbar) {
@@ -58,18 +161,13 @@ class BlogDragSystem {
             navbarBottom = navbarRect.bottom;
         }
         
-        // Ensure initial position is below navbar with margin
-        const margin = 20;
-        const safeY = Math.max(rect.top, navbarBottom + margin);
+        this.fixedWidth = rect.width;
+        this.fixedHeight = rect.height;
         
         this.initialPosition = {
             x: rect.left + window.scrollX,
-            y: safeY + window.scrollY
+            y: Math.max(rect.top + window.scrollY, navbarBottom + 20)
         };
-        
-        // Store the exact initial width and height BEFORE making it absolute
-        this.fixedWidth = rect.width;
-        this.fixedHeight = rect.height;
         
         // Make it absolutely positioned
         this.blogPost.style.position = 'absolute';
@@ -78,17 +176,13 @@ class BlogDragSystem {
         this.blogPost.style.margin = '0';
         this.blogPost.style.zIndex = '1000';
         
-        // Set fixed dimensions to prevent resizing/wrapping
+        // Set fixed dimensions
         this.blogPost.style.width = this.fixedWidth + 'px';
         this.blogPost.style.minWidth = this.fixedWidth + 'px';
         this.blogPost.style.maxWidth = this.fixedWidth + 'px';
         this.blogPost.style.height = 'auto';
         this.blogPost.style.boxSizing = 'border-box';
         
-        // IMPORTANT: Ensure it can't overflow the viewport
-        this.blogPost.style.maxWidth = Math.min(this.fixedWidth, window.innerWidth - 20) + 'px';
-        
-        // Store initial size and position for maximize/restore functionality
         this.savedPosition = {
             x: this.initialPosition.x,
             y: this.initialPosition.y,
@@ -249,6 +343,16 @@ class BlogDragSystem {
         this.blogPost.classList.add('dragging');
         this.titleBar.style.cursor = 'grabbing';
         
+        // Set z-index based on hamburger menu state
+        const linksMenu = document.querySelector('.links');
+        if (linksMenu && linksMenu.classList.contains('active')) {
+            // If hamburger menu is open, keep blog post behind it even when dragging
+            this.blogPost.style.zIndex = '900';
+        } else {
+            // Menu closed - keep blog post behind hamburger button even when dragging
+            this.blogPost.style.zIndex = '950';
+        }
+        
         // Prevent default to avoid unwanted behaviors
         e.preventDefault();
     }
@@ -264,38 +368,30 @@ class BlogDragSystem {
         let newX = clientX - this.dragOffset.x;
         let newY = clientY - this.dragOffset.y;
         
-        // Get navbar bottom position for accurate constraint
+        // Get current dimensions
+        const currentRect = this.blogPost.getBoundingClientRect();
+        
+        // Use the viewport constraint system for boundaries
+        const boundaries = viewportConstraints.getSafeBoundaries(
+            currentRect.width, 
+            currentRect.height
+        );
+        
+        // Get navbar constraint
         const navbar = document.querySelector('.navigation-bar');
         let navbarBottom = 0;
         if (navbar) {
-            const navbarRect = navbar.getBoundingClientRect();
-            navbarBottom = navbarRect.bottom;
+            navbarBottom = navbar.getBoundingClientRect().bottom;
         }
         
-        // Use the current actual dimensions for boundary calculations
-        const currentRect = this.blogPost.getBoundingClientRect();
-        const postWidth = currentRect.width;
-        const postHeight = currentRect.height;
-        
-        // Apply strict constraints with safety margins
-        const margin = 10;
-        const minX = margin;
-        const minY = navbarBottom + margin;
-        const maxX = window.innerWidth - postWidth - margin;
-        const maxY = window.innerHeight - postHeight - margin;
-        
-        // Ensure values are valid
-        const safeMaxX = Math.max(minX, maxX);
-        const safeMaxY = Math.max(minY, maxY);
-        
-        newX = Math.max(minX, Math.min(newX, safeMaxX));
-        newY = Math.max(minY, Math.min(newY, safeMaxY));
+        // Apply constraints
+        newX = Math.max(boundaries.minX, Math.min(newX, boundaries.maxX));
+        newY = Math.max(Math.max(boundaries.minY, navbarBottom + 10), Math.min(newY, boundaries.maxY));
         
         // Apply new position
         this.blogPost.style.left = newX + 'px';
         this.blogPost.style.top = newY + 'px';
         
-        // Prevent default to avoid scrolling on mobile
         e.preventDefault();
     }
     
@@ -307,6 +403,9 @@ class BlogDragSystem {
         // Remove dragging class
         this.blogPost.classList.remove('dragging');
         this.titleBar.style.cursor = 'grab';
+        
+        // Restore appropriate z-index based on hamburger menu state
+        this.handleHamburgerMenuToggle();
     }
     
     addDragStyles() {
@@ -314,8 +413,15 @@ class BlogDragSystem {
         this.titleBar.style.cursor = 'grab';
         this.titleBar.style.userSelect = 'none';
         
+        // Check if styles already exist to prevent memory leaks
+        const existingStyles = document.getElementById('blog-drag-styles');
+        if (existingStyles) {
+            return; // Styles already added, no need to add again
+        }
+        
         // Add styles for dragging state
         const style = document.createElement('style');
+        style.id = 'blog-drag-styles'; // Add ID for checking existence
         style.textContent = `
             .blog-post.dragging {
                 box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
@@ -383,31 +489,66 @@ class BlogDragSystem {
         this.blogPost.style.left = Math.max(0, centerX) + 'px';
         this.blogPost.style.top = Math.max(navbarHeight, centerY) + 'px';
     }
+    
+    setupHamburgerMenuZIndex() {
+        const linksMenu = document.querySelector('.links');
+        const hamburgerButton = document.querySelector('.hamburger');
+        
+        if (!linksMenu || !hamburgerButton) {
+            return; // No hamburger menu found (probably desktop)
+        }
+        
+        // Create a MutationObserver to watch for class changes on the links menu
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+                    this.handleHamburgerMenuToggle();
+                }
+            });
+        });
+        
+        // Start observing the links menu for class changes
+        observer.observe(linksMenu, {
+            attributes: true,
+            attributeFilter: ['class']
+        });
+        
+        // Also handle initial state
+        this.handleHamburgerMenuToggle();
+    }
+    
+    handleHamburgerMenuToggle() {
+        const linksMenu = document.querySelector('.links');
+        if (!linksMenu) return;
+        
+        if (linksMenu.classList.contains('active')) {
+            // Menu is open - put blog post behind the menu
+            this.blogPost.style.zIndex = '900'; // Lower than menu's 999
+        } else {
+            // Menu is closed - put blog post behind hamburger button (1001)
+            this.blogPost.style.zIndex = this.isDragging ? '950' : '950'; // Lower than hamburger button's 1001
+        }
+    }
 }
 
-// Initialize the drag system
+// Initialize systems
 const blogDragSystem = new BlogDragSystem();
 
-// Add some utility methods to window for debugging/testing
+// Add utility to window
+window.viewportConstraints = viewportConstraints;
 window.blogDragSystem = blogDragSystem;
 
-// Add help text to console
 console.log(`
-🎉 Blog Drag System Loaded!
+🎉 Enhanced Blog Drag System with Viewport Constraints Loaded!
 
-Features:
-• Drag the title bar to move the blog post
-• Double-click the title bar to maximize/restore
-• Click the red button to close
-• Click the yellow button to minimize/restore
-• Click the green button to maximize/restore
-
-Keyboard shortcuts:
-• Cmd/Ctrl + W: Close
-• Cmd/Ctrl + M: Minimize/Restore
-• Cmd/Ctrl + Enter: Maximize/Restore
+New Features:
+• 🔒 Viewport is locked to screen size
+• 📐 All elements constrained within viewport
+• 🚫 Page can never expand beyond screen
+• 📱 Responsive to window resize
 
 Utility functions:
+• viewportConstraints.getSafeBoundaries(width, height) - Get safe boundaries for any element
 • blogDragSystem.centerPost() - Center the post
 • blogDragSystem.resetPosition() - Reset to original position
 `); 
